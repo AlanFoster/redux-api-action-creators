@@ -1,0 +1,22 @@
+{
+  "name": "redux-api-action-creators",
+  "version": "0.0.1",
+  "description": "API Action Creators for Redux",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlanFoster/redux-api-action-creators.git"
+  },
+  "keywords": [
+    "redux"
+  ],
+  "author": "Alan Foster <alan@alanfoster.me> (http://www.alanfoster.me/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlanFoster/redux-api-action-creators/issues"
+  },
+  "homepage": "https://github.com/AlanFoster/redux-api-action-creators#readme"
+}
