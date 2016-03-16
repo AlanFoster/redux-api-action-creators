@@ -1,0 +1,37 @@
+{
+  "name": "redux-api-action-creators",
+  "version": "0.0.1",
+  "description": "API Action Creators for Redux",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel-core/register --require ./tests/test-helper.js --watch-extensions js '**/tests/*.spec.js'",
+    "compile": "rm -rf dist && babel src --out-dir dist --ignore tests",
+    "prepublish": "npm run compile"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlanFoster/redux-api-action-creators.git"
+  },
+  "keywords": [
+    "redux"
+  ],
+  "author": "Alan Foster <alan@alanfoster.me> (http://www.alanfoster.me/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlanFoster/redux-api-action-creators/issues"
+  },
+  "homepage": "https://github.com/AlanFoster/redux-api-action-creators#readme",
+  "devDependencies": {
+    "babel-cli": "~6.6.5",
+    "babel-core": "~6.7.2",
+    "babel-preset-es2015": "~6.6.0",
+    "chai": "~3.5.0",
+    "mocha": "~2.4.5",
+    "sinon": "~1.17.3",
+    "sinon-chai": "~2.8.0"
+  }
+}
