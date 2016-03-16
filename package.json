@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require ./tests/test-helper.js --watch-extensions js '**/tests/*.spec.js'",
+    "test-dev": "npm run test -- --watch",
     "compile": "rm -rf dist && babel src --out-dir dist --ignore tests",
     "prepublish": "npm run compile"
   },
@@ -33,5 +34,8 @@
     "mocha": "~2.4.5",
     "sinon": "~1.17.3",
     "sinon-chai": "~2.8.0"
+  },
+  "dependencies": {
+    "lodash": "~4.6.1"
   }
 }
