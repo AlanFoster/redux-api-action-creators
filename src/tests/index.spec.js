@@ -82,7 +82,7 @@ describe('ApiActionCreator', function () {
       });
 
       it('creates all action creators', function () {
-        expect(_.keys(this.actionCreators)).to.eql(['getData']);
+        expect(this.actionCreators).to.have.all.keys(['getData']);
       });
 
       it('returns a function for getData', function () {
