@@ -1,94 +1,58 @@
 import { expect } from 'chai';
-import apiActionCreator from '../'
-import _ from 'lodash';
+import sinon from 'sinon';
+const proxyquire = require('proxyquire').noCallThru();
 
-describe('ApiActionCreator', function () {
-  describe('when passed no configuration', function () {
-    beforeEach(function () {
-      this.actionCreators = apiActionCreator({});
-    });
+describe('External API', function () {
+  let api = function () {
+    this.createAPIActionCreatorMock = sinon.stub();
+    this.createAPIActionCreatorMock.onCall(0).returns('firstResult');
+    this.createAPIActionCreatorMock.onCall(1).returns('secondResult');
 
-    it('returns no dispatchers', function () {
-      expect(this.actionCreators).to.eql({});
-    });
+    return proxyquire('../index', {
+      './create-api-action-creator': this.createAPIActionCreatorMock,
+      './create-json-api-action-creator': this.createAPIActionCreatorMock,
+
+    }).default;
+  };
+
+  beforeEach(function () {
+    api = api.bind(this);
   });
 
-  describe('when passed a single route', function () {
-    describe('and there is a missing route', function () {
-      it('then throws an error', function () {
-        const configuration = {
-          getData: {
-            success: 'DATA_SUCCESS',
-            pending: 'DATA_PENDING',
-            error: 'DATA_ERROR'
-          }
-        };
-
-        expect(() => apiActionCreator(configuration)).to.throw(/Missing route/i);
-      })
-    });
-
-    describe('missing success', function () {
-      it('then throws an error', function () {
-        const configuration = {
-          getData: {
-            route: '/data',
-            pending: 'DATA_PENDING',
-            error: 'DATA_ERROR'
-          }
-        };
-
-        expect(() => apiActionCreator(configuration)).to.throw(/Missing success/i);
-      })
-    });
-
-    describe('missing pending', function () {
-      it('does not throw an error', function () {
-        const configuration = {
-          getData: {
-            route: '/data',
-            success: 'DATA_SUCCESS',
-            error: 'DATA_ERROR'
-          }
-        };
-
-        expect(() => apiActionCreator(configuration)).not.to.throw();
-      });
-    });
-
-    describe('missing error', function () {
-      it('does not throw an error', function () {
-        const configuration = {
-          getData: {
-            route: '/data',
-            success: 'DATA_SUCCESS'
-          }
-        };
-
-        expect(() => apiActionCreator(configuration)).not.to.throw();
-      });
-    });
-
-    describe('returns the action creator', function () {
+  describe('#createAPIActionCreators', function () {
+    describe('when passed no configuration', function () {
       beforeEach(function () {
-        this.actionCreators = apiActionCreator({
-          getData: {
-            route: '/data',
-            success: 'DATA_SUCCESS',
-            pending: 'DATA_PENDING',
-            error: 'DATA_ERROR'
-          }
+        this.actionCreators = api().createAPIActionCreators({});
+      });
+
+      it('returns no dispatchers', function () {
+        expect(this.actionCreators).to.eql({});
+      });
+    });
+
+    describe('when passed configuration', function () {
+      beforeEach(function () {
+        this.actionCreators = api().createAPIActionCreators({
+          firstRoute: { route: 'first' },
+          secondRoute: { route: 'second' }
         });
       });
 
-      it('creates all action creators', function () {
-        expect(this.actionCreators).to.have.all.keys(['getData']);
+      it('calls the createAPIActionCreator with the first route', function () {
+        expect(this.createAPIActionCreatorMock).to.have.been.calledWith({ route: 'first'}, 'firstRoute');
       });
 
-      it('returns a function for getData', function () {
-        expect(this.actionCreators.getData).to.be.a('function');
+      it('calls the createAPIActionCreator with the second route', function () {
+        expect(this.createAPIActionCreatorMock).to.have.been.calledWith({ route: 'second'}, 'secondRoute');
       });
-    });
+
+      it('returns the action creators', function () {
+        expect(this.actionCreators).to.eql({
+          firstRoute: 'firstResult',
+          secondRoute: 'secondResult'
+        });
+      });
+    })
   });
 });
 
