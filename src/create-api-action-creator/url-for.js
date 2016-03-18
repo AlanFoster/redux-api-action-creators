@@ -15,12 +15,16 @@ const queryStringFor = function (query = {}) {
   return values.join('&');
 };
 
+const appendQuery = function (url, query) {
+  if (_.isEmpty(query)) return url;
+
+  const queryString = queryStringFor(query);
+  return `${url}?${queryString}`;
+};
+
 export default function (request = { }, route) {
   const { params, query } = request;
 
   const url = interpolateNames(params, route);
-  if (_.isEmpty(query)) return url;
-
-  const queryString = queryStringFor(request.query);
-  return `${url}?${queryString}`;
+  return appendQuery(url, query);
 }
