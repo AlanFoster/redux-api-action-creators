@@ -4,10 +4,21 @@ import xhrWrapper from '../xhr-wrapper';
 import requestFor from './request-for';
 import actionsFor from './actions-for';
 
-export default  function (configuration, actionCreatorName) {
+const noopMiddleware = function (request, response, next) {
+  return next(request, response);
+};
+
+const defaultMiddleware = {
+  onRequest: noopMiddleware,
+  onSuccess: noopMiddleware
+};
+
+export default function (configuration, actionCreatorName, middleware) {
   validateConfiguration(configuration, function (error) {
     throw new Error(`Can not create ApiActionCreator '${actionCreatorName}' because '${error}'`);
   });
+
+  middleware = _.defaults(middleware, defaultMiddleware);
 
   return () => (dispatch) => {
     const actions = actionsFor(configuration);
@@ -18,11 +29,15 @@ export default  function (configuration, actionCreatorName) {
 
     const request = requestFor(configuration);
 
-    const onSuccess = function (response) {
-      dispatch(actions.success({ request, response }));
-    };
+    middleware.onRequest(request, undefined, function (request) {
+      const onSuccess = function (response) {
+        middleware.onSuccess(request, response, function (request, response) {
+          dispatch(actions.success({ request, response }));
+        });
+      };
 
-    xhrWrapper(request, onSuccess);
+      xhrWrapper(request, onSuccess);
+    });
   };
 };
 

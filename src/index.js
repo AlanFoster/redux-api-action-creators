@@ -1,8 +1,17 @@
 import _ from 'lodash';
-import createApiActionCreator from './create-api-action-creator';
+import createAPIActionCreator from './create-api-action-creator';
+import createJSONAPIActionCreator from './create-json-api-action-creator';
 
-export default function (configuration) {
-  const actionCreators = _.mapValues(configuration, createApiActionCreator);
+export default {
+  createAPIActionCreators(configuration) {
+    const actionCreators = _.mapValues(configuration, createAPIActionCreator);
 
-  return actionCreators;
+    return actionCreators;
+  },
+
+  createJSONAPIActionCreators(configuration) {
+    const actionCreators = _.mapValues(configuration, createJSONAPIActionCreator);
+
+    return actionCreators;
+  }
 }
