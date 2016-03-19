@@ -21,38 +21,50 @@ describe('Xhr', function () {
   });
 
   describe('#GET', function () {
-    beforeEach(function () {
+    let makeRequest = function () {
       this.onSuccessStub = sinon.stub();
       this.result = this.xhrWrapper({
         url: 'custom-url'
       }, this.onSuccessStub);
       this.getRequest = this.requests[0];
+    };
+
+    beforeEach(function () {
+      makeRequest = makeRequest.bind(this);
     });
 
-    it('sets the URL correctly', function () {
-      expect(this.getRequest.url).to.eql('custom-url');
-    });
+    describe('setting the request values correctly', function () {
+      beforeEach(function () {
+        makeRequest();
+      });
 
-    it('sets the request body', function () {
-      expect(this.getRequest.body).to.eql(undefined);
-    });
+      it('sets the URL correctly', function () {
+        expect(this.getRequest.url).to.eql('custom-url');
+      });
 
-    it('sets the request headers', function () {
-      expect(this.getRequest.requestHeaders).to.eql({});
-    });
+      it('sets the request body', function () {
+        expect(this.getRequest.body).to.eql(undefined);
+      });
 
-    it('sets the method type as GET', function () {
-      expect(this.getRequest.method).to.eql('GET');
+      it('sets the request headers', function () {
+        expect(this.getRequest.requestHeaders).to.eql({});
+      });
+
+      it('sets the method type as GET', function () {
+        expect(this.getRequest.method).to.eql('GET');
+      });
     });
 
     describe('when the XHR completes', function () {
       context('and the status codes are valid', function () {
         beforeEach(function () {
           const statusCode = 200;
-          const responseHeaders = { "Content-Type": "application/json" };
+          const responseHeaders = { 'Content-Type': 'application/json' };
           const responseBody = '{ "success": true }';
 
           this.isSuccessStub.returns(true);
+
+          makeRequest();
           this.getRequest.respond(statusCode, responseHeaders, responseBody);
         });
 
@@ -76,10 +88,12 @@ describe('Xhr', function () {
       context('and the status codes are not valid', function () {
         beforeEach(function () {
           const statusCode = 404;
-          const responseHeaders = { "Content-Type": "application/json" };
+          const responseHeaders = { 'Content-Type': 'application/json' };
           const responseBody = '{ "success": true }';
 
           this.isSuccessStub.returns(false);
+
+          makeRequest();
           this.getRequest.respond(statusCode, responseHeaders, responseBody);
         });
 
