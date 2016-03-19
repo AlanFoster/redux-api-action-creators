@@ -15,7 +15,7 @@ describe('External API', function () {
     return proxyquire('../index', {
       './create-api-action-creator': this.createAPIActionCreatorMock,
       './create-json-api-action-creator': this.createJSONAPIActionCreatorMock
-    }).default;
+    });
   };
 
   beforeEach(function () {
