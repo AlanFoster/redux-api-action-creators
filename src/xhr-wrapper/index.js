@@ -5,11 +5,12 @@ export default function (request, onSuccess) {
   const { method = 'GET', url } = request;
 
   const xhr = new XMLHttpRequest();
-  xhr.open(method, url);
-
   xhr.onreadystatechange = function() {
     if (isSuccess(xhr)) {
       onSuccess(xhr)
     }
   };
+
+  xhr.open(method, url);
+  xhr.send();
 }
