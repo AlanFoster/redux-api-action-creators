@@ -1,4 +1,4 @@
-# redux-api-action-creators
+# redux-api-action-creators [![Build Status](https://travis-ci.org/AlanFoster/redux-api-action-creators.svg?branch=master)](https://travis-ci.org/AlanFoster/redux-api-action-creators)
 API Action Creators for Redux
 
 
