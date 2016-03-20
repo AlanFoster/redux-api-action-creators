@@ -20,14 +20,14 @@ export default function (configuration, actionCreatorName, middleware) {
 
   middleware = _.defaults(middleware, defaultMiddleware);
 
-  return () => (dispatch) => {
+  return (...args) => (dispatch) => {
     const actions = actionsFor(configuration);
 
     if (_.isString(configuration.pending)) {
       dispatch(actions.pending());
     }
 
-    const request = requestFor(configuration);
+    const request = requestFor(configuration, ...args);
 
     middleware.onRequest(request, undefined, function (request) {
       const onSuccess = function (response) {

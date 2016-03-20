@@ -243,4 +243,41 @@ describe('CreateApiActionCreator', function () {
       });
     });
   });
+
+  describe('calling action creator with params', function () {
+    beforeEach(function () {
+      const actionCreatorName = 'getData';
+      const configuration = {
+        route: '/data/:id',
+        success: 'DATA_SUCCESS',
+        pending: 'DATA_PENDING',
+        error: 'DATA_ERROR',
+        createRequest(data) {
+          return {
+            params: {
+              id: data.id
+            },
+            query: {
+              filter: data.filter
+            }
+          }
+        }
+      };
+
+      this.actionCreator = createApiActionCreator(configuration, actionCreatorName);
+
+      this.dispatchStub = sinon.stub();
+      const actionArguments = { id: 123, filter: 'foo' };
+      this.actionCreator(actionArguments)(this.dispatchStub);
+    });
+
+    it('calls the XHR object correctly', function () {
+      expect(this.xhrStub).to.have.been.calledWith({
+        url: '/data/123?filter=foo',
+        method: 'GET',
+        params: { id: 123 },
+        query: { filter: "foo" }
+      });
+    });
+  });
 });
