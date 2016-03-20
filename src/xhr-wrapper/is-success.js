@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
 export default function (response) {
-  const status = _.result(response, 'status');
+  if (!_.isObject(response)) return false;
 
-  return (status >= 200 && status < 300);
+  const { readyState, status } = response;
+  return (readyState === 4 && (status >= 200 && status < 300));
 }
