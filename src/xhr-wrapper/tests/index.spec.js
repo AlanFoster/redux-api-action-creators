@@ -3,6 +3,40 @@ import sinon from 'sinon';
 const proxyquire = require('proxyquire').noCallThru();
 
 describe('Xhr', function () {
+  let makeRequest = function (request) {
+    this.onSuccessStub = sinon.stub();
+    this.result = this.xhrWrapper(request, this.onSuccessStub);
+    this.getRequest = this.requests[0];
+  };
+
+  const request = function () {
+    return {
+      url: 'custom-url'
+    };
+  };
+
+  const requestWithHeaders = function () {
+    return {
+      url: 'custom-url',
+      headers: { 'custom-header': true }
+    };
+  };
+
+  const requestWithNoBody = function () {
+    return {
+      url: 'custom-url',
+      method: 'POST'
+    };
+  };
+
+  const requestWithBody = function () {
+    return {
+      url: 'custom-url',
+      method: 'POST',
+      body: 'custom body'
+    };
+  };
+
   beforeEach(function () {
     this.requests = [];
     this.isSuccessStub = sinon.stub().returns(true);
@@ -14,28 +48,42 @@ describe('Xhr', function () {
       './raw-xhr': this.fakeXHR,
       './is-success': this.isSuccessStub
     }).default;
+
+    makeRequest = makeRequest.bind(this);
   });
 
   afterEach(function () {
     this.fakeXHR.restore();
   });
 
-  describe('#GET', function () {
-    let makeRequest = function () {
-      this.onSuccessStub = sinon.stub();
-      this.result = this.xhrWrapper({
-        url: 'custom-url'
-      }, this.onSuccessStub);
-      this.getRequest = this.requests[0];
-    };
+  describe('headers', function () {
+    context('when no headers are sent', function () {
+      beforeEach(function () {
+        makeRequest(request());
+      });
 
-    beforeEach(function () {
-      makeRequest = makeRequest.bind(this);
+      it('sets the request headers', function () {
+        expect(this.getRequest.requestHeaders).to.eql({});
+      });
     });
 
+    context('when headers are sent', function () {
+      beforeEach(function () {
+        makeRequest(requestWithHeaders());
+      });
+
+      it('sets the request headers', function () {
+        expect(this.getRequest.requestHeaders).to.eql({
+          'custom-header': true
+        });
+      });
+    });
+  });
+
+  describe('#GET', function () {
     describe('setting the request values correctly', function () {
       beforeEach(function () {
-        makeRequest();
+        makeRequest(requestWithHeaders());
       });
 
       it('sets the URL correctly', function () {
@@ -47,7 +95,9 @@ describe('Xhr', function () {
       });
 
       it('sets the request headers', function () {
-        expect(this.getRequest.requestHeaders).to.eql({});
+        expect(this.getRequest.requestHeaders).to.eql({
+          'custom-header': true
+        });
       });
 
       it('sets the method type as GET', function () {
@@ -64,7 +114,7 @@ describe('Xhr', function () {
 
           this.isSuccessStub.returns(true);
 
-          makeRequest();
+          makeRequest(requestWithHeaders());
           this.getRequest.respond(statusCode, responseHeaders, responseBody);
         });
 
@@ -93,12 +143,36 @@ describe('Xhr', function () {
 
           this.isSuccessStub.returns(false);
 
-          makeRequest();
+          makeRequest(requestWithHeaders());
           this.getRequest.respond(statusCode, responseHeaders, responseBody);
         });
 
         it('does not call the onSuccess callback', function () {
           expect(this.onSuccessStub).not.to.have.been.called;
+        });
+      });
+    });
+  });
+
+  describe('#POST', function () {
+    describe('body', function () {
+      context('when no body is sent', function () {
+        beforeEach(function () {
+          makeRequest(requestWithNoBody());
+        });
+
+        it('sets the request body', function () {
+          expect(this.getRequest.requestBody).to.eql(undefined);
+        });
+      });
+
+      context('when headers are sent', function () {
+        beforeEach(function () {
+          makeRequest(requestWithBody());
+        });
+
+        it('sets the request body', function () {
+          expect(this.getRequest.requestBody).to.eql('custom body');
         });
       });
     });
